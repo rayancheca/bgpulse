@@ -14,11 +14,13 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 2 — internal/bgp: types.go (UpdateEvent, ClassifiedEvent, Community, PathHop), enums UpdateKind/RelStatus/VFStatus/RPKIStatus with String()/Invert()/Severity(), source.go (Source iface), classifier.go (Classifier iface). Tests green, go vet clean. RelStatus semantics: Lookup(a,b) = a's view of b; RelCustomer=b is a's customer (downhill), RelProvider=b is a's provider (uphill).
 
+- STEP 3 — internal/relationships: RelStore (immutable, canonical (lo,hi) edges, Lookup with Invert + self=sibling + missing=unknown), Builder (Add normalizes + conflict-detects), CAIDA serial-2 loader (ParseCAIDA/LoadCAIDA: -1=>provider→RelCustomer, 0=>peer), names table (ParseNames). Tests 93.2% coverage, vet clean.
+
 ## In progress
-STEP 3 (internal/relationships) — RelStore (immutable, Lookup with inversion + sibling/self), CAIDA serial-2 loader, names table, tests.
+STEP 4 (internal/valleyfree) — Gao-Rexford two-phase ClassifyPath(path []uint32, rel) returning (VFStatus, []PathHop, offenderAS, reason, hadUnknown, hadASSet). >=12-case table test.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-3. internal/relationships RelStore + CAIDA loader + tests.
+4. internal/valleyfree Gao-Rexford classifier + table test.
 4. internal/valleyfree Gao-Rexford two-phase ClassifyPath + >=12-case table test.
 5. internal/rpki VRP trie + RFC 6811 Validate (corrected maxLength) + JSON loader + tests.
 6. internal/classify precedence glue + tests.
