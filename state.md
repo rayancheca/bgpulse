@@ -18,11 +18,13 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 4 — internal/valleyfree: ClassifyPath(path,hasASSet,rl)->Verdict{IsLeak,OffenderAS,Reason,Hops(wire order),HadUnknown,KnownHops}. Two-phase Up→Down machine; walks propagation order (decreasing wire idx); offender = leaking AS (To-side of offending wire hop); siblings transparent; unknown+AS_SET never flagged; prepend dedup. 13-case table test (uphill/downhill/peer/leak×3/sibling/unknown/AS_SET) at 97.7% coverage.
 
+- STEP 5 — internal/rpki: VRP, v4/v6 binary trie (VRPStore immutable, Builder), Validate (covering=containment via trie descent; match needs pBits<=maxLength && origin==VRP.origin && origin!=0; Valid>Invalid>NotFound) — maxLength-exceeded+no-match => Invalid (the RFC 6811 fix). AS0 disavow → Invalid. LoadVRPsJSON (AS-string + numeric asn, default maxLength). 14-case validate table + loader tests at 96.5% coverage.
+
 ## In progress
-STEP 5 (internal/rpki) — VRP, v4/v6 trie, Validate (covering=containment ONLY; maxLength-exceeded+no-match=>Invalid not NotFound), AS0 disavow, JSON loader. Tests incl. maxLength→Invalid.
+STEP 6 (internal/classify) — concrete bgp.Classifier combining valleyfree+rpki with Hijack>Leak>Normal precedence; builds ClassifiedEvent (VFStatus/RPKIStatus/Hops/OffenderAS/Reason); origin-from-AS_SET/empty => RPKI advisory.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-5. internal/rpki RFC 6811 validation + JSON loader + tests.
+6. internal/classify precedence glue + tests.
 4. internal/valleyfree Gao-Rexford two-phase ClassifyPath + >=12-case table test.
 5. internal/rpki VRP trie + RFC 6811 Validate (corrected maxLength) + JSON loader + tests.
 6. internal/classify precedence glue + tests.
