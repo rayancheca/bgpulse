@@ -32,14 +32,15 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 10 — internal/topology: single-writer Aggregator actor (Run select loop over in/snapReqs/ctx/1s-rate-ticker; no locks). graph.go (TopologyGraph Nodes/Edges directed/rib, ASNode w/ prefix set+RPKICounts+series, Edge). ring.go (EventRing bounded, recent/byEdge). series.go (ringCounters virtual-time sparkline buckets, bounded advance). stats.go (counters + EWMA tick). apply.go (origin RPKI tally+series, edge upsert showing LATEST status+cumulative leak/hijack counts, RIB prefix-count in/out + origin-change, self-loop skip, AS_SET-origin not tracked). views.go (NodeView/EdgeView/SnapshotView/StatsView+TopOrigins/ASNDetailView/EdgeDetailView/FullSnapshot — topology returns its own view types, api maps to DTO to avoid cycle). aggregator.go (read methods via snapReq+reply, broadcast non-blocking to out chan). Tests: direct apply unit tests + concurrent actor (synth+classifier, 3 reader goroutines) -race green, 89.2% coverage. NOTE: api maps topology views→DTO; aggregator broadcasts bgp.ClassifiedEvent on out chan (server maps+marshals for hub) — NO topology→api/wshub import.
 
+- STEP 11 — internal/api: dto.go (full pinned wire contract incl WSMessage type snapshot/event/stats), mapper.go (topology views + ClassifiedEvent → DTO; enum .String() lowercase tokens, RFC3339, {asn,value}), envelope.go (Envelope[T]/writeOK/writeErr), server.go (Store iface — *topology.Aggregator satisfies it; HealthInfo; Routes(wsHandler) with recoverer/logger/cors), rest.go (handlers + parseASN/parseLimit). Tests: httptest status codes + byte-exact golden ClassifiedDTO JSON. api imports topology+bgp (no cycle).
+- STEP 12 — internal/wshub: coder/websocket v1.8.14. hub.go (single-goroutine Run owns clients; sendToClient drop-oldest + disconnect>512 drops; Broadcast non-blocking; Handler upgrades, writes snapshot directly pre-pump, registers; h.done prevents unregister leak on shutdown). client.go (writePump drains send→conn, readPump detects close→unregister). Tests: drop-oldest+disconnect unit + real WS dial snapshot+broadcast, -race green.
+
 ## In progress
-STEP 11 (internal/api) — DTOs (the pinned wire contract), mapper (topology views + bgp.ClassifiedEvent → DTO, enum→lowercase string, RFC3339 ts, communities {asn,value}), envelope (Envelope[T]/writeJSON/writeError), REST handlers (health/topology/events/asn/edge/stats), router (http.ServeMux 1.22), middleware (recoverer/log/cors). httptest contract tests + golden JSON.
+STEP 13 (config+pipeline+server+main) — internal/config (Config, Load flags+env+validate, NewLogger, limits.go). internal/pipeline (Source→Classifier 1 goroutine→aggregator.in chan, owns/closes it). api/frames.go (exported EventFrame/StatsFrame/SnapshotFrame helpers). internal/server (composition root New+Run errgroup graceful shutdown; sources.go mode demo|replay + degrade). data/embed.go + bundled as-rel.sample.txt + demo_vrps.json. cmd/bgpulse/main.go. THEN run demo, curl health/topology, confirm WS streams.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-11. internal/api DTOs + mapper + envelope + REST + golden JSON contract test.
-12. internal/wshub Hub + Client drop-oldest + slow-client test.
 13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl, confirm WS.
-14-20. Frontend + docker/readme/screenshots.
+14-20. Frontend (design system, lib, hooks, canvas, panels, app shell + Playwright) + docker/readme/screenshots.
 12. internal/wshub Hub + Client drop-oldest + slow-client test.
 13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl, confirm WS.
 14-20. Frontend + docker/readme/screenshots.
