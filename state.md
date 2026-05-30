@@ -20,11 +20,13 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 5 — internal/rpki: VRP, v4/v6 binary trie (VRPStore immutable, Builder), Validate (covering=containment via trie descent; match needs pBits<=maxLength && origin==VRP.origin && origin!=0; Valid>Invalid>NotFound) — maxLength-exceeded+no-match => Invalid (the RFC 6811 fix). AS0 disavow → Invalid. LoadVRPsJSON (AS-string + numeric asn, default maxLength). 14-case validate table + loader tests at 96.5% coverage.
 
+- STEP 6 — internal/classify: Classifier (New(rel,vrp Validator); Validator iface so RTR can swap). Classify: withdraw=>neutral; else valleyfree+RPKI; precedence Hijack(origin offender)>Leak(vf offender)>Unknown(knownHops==0)>Valid. 100% coverage.
+
 ## In progress
-STEP 6 (internal/classify) — concrete bgp.Classifier combining valleyfree+rpki with Hijack>Leak>Normal precedence; builds ClassifiedEvent (VFStatus/RPKIStatus/Hops/OffenderAS/Reason); origin-from-AS_SET/empty => RPKI advisory.
+STEP 7 (internal/synth) — ONE canonical tiered topology (tier1 1001-1006 peers, transit 2001-2024, stubs 3001-3120) + derive RelStore+VRPStore + prefix-owner map; generator (bgp.Source, math/rand/v2 PCG seed, virtual clock, valid baseline) + scenarios (scheduled leak+hijack); determinism golden + integration test (injected leak+hijack detected end-to-end).
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-6. internal/classify precedence glue + tests.
+7. internal/synth topology+generator+scenarios+derive + determinism + integration test.
 4. internal/valleyfree Gao-Rexford two-phase ClassifyPath + >=12-case table test.
 5. internal/rpki VRP trie + RFC 6811 Validate (corrected maxLength) + JSON loader + tests.
 6. internal/classify precedence glue + tests.
