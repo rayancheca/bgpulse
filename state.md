@@ -22,16 +22,22 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 6 — internal/classify: Classifier (New(rel,vrp Validator); Validator iface so RTR can swap). Classify: withdraw=>neutral; else valleyfree+RPKI; precedence Hijack(origin offender)>Leak(vf offender)>Unknown(knownHops==0)>Valid. 100% coverage.
 
+- STEP 7 — internal/synth: BuildDefault(seed)->Topology (tier1 1001-1006 full peer mesh; transit 2001-2024, AS2001 forced multi-homed to 1001+1002 for the leak scenario; stubs 3001-3120; prefixes in 11/12/100/101 blocks; ~80% ROA'd) deriving RelStore+VRPStore from ONE source. Generator (bgp.Source, math/rand/v2 PCG DefaultSeed, virtual clock baseTime 2024-01-01; Next()+Events(); validPath = up-peak-down valley-free; makeLeak wire [1002,2001,1001] offender 2001; makeHijack stub announces a victim ROA'd prefix → RPKI Invalid). Tests: determinism golden + integration (600 events → 50 leaks/29 hijacks, ZERO false positives, every leak offender=2001, every hijack Invalid-from-stub). 86.1% coverage. Full suite green with -race.
+
+## BACKEND CORE COMPLETE (steps 1-7). Pure algorithmic layer done + tested. Coverage: relationships 93%, valleyfree 98%, rpki 96%, classify 100%, synth 86%.
+
 ## In progress
-STEP 7 (internal/synth) — ONE canonical tiered topology (tier1 1001-1006 peers, transit 2001-2024, stubs 3001-3120) + derive RelStore+VRPStore + prefix-owner map; generator (bgp.Source, math/rand/v2 PCG seed, virtual clock, valid baseline) + scenarios (scheduled leak+hijack); determinism golden + integration test (injected leak+hijack detected end-to-end).
+STEP 8 (internal/mrt) — MRT/BGP parser via gobgp v4: parser.go (normalize MRTMessage->[]UpdateEvent: AS_PATH flatten + AS_SET→single opaque hop + HasASSet + 4-byte ASNs; origin = last AS_SEQUENCE elem, 0 if AS_SET; bounds-check PEER_INDEX), reader.go (gzip/bz2 + SplitMrt scanner), replay.go (paced bgp.Source). Golden decode test against a bundled MRT file (encode real BGP4MP wire bytes with gobgp, decode+normalize, assert).
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-7. internal/synth topology+generator+scenarios+derive + determinism + integration test.
-4. internal/valleyfree Gao-Rexford two-phase ClassifyPath + >=12-case table test.
-5. internal/rpki VRP trie + RFC 6811 Validate (corrected maxLength) + JSON loader + tests.
-6. internal/classify precedence glue + tests.
-7. internal/synth canonical topology + generator + scenarios + derive + determinism + integration test.
-(then mrt, rtr, topology, api, wshub, config/pipeline/server/main, then frontend, then docker/readme/screenshots — see CLAUDE.md §3f steps 8–20)
+8. internal/mrt parser + replay source + golden test.
+9. internal/rtr RFC 8210 PDU codec + client state machine + net.Pipe fake-server test.
+10. internal/topology graph + EventRing + series + Aggregator actor + apply + snapshot (-race).
+11. internal/api DTOs + mapper + envelope + REST + golden JSON contract test.
+12. internal/wshub Hub + Client drop-oldest + slow-client test.
+13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl health/topology, confirm WS.
+14-19. Frontend (design system, lib, hooks, canvas, panels, app shell + Playwright golden path).
+20. Docker compose + README + live screenshots + release.
 
 ## Blockers
 None.
