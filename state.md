@@ -16,11 +16,13 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 3 — internal/relationships: RelStore (immutable, canonical (lo,hi) edges, Lookup with Invert + self=sibling + missing=unknown), Builder (Add normalizes + conflict-detects), CAIDA serial-2 loader (ParseCAIDA/LoadCAIDA: -1=>provider→RelCustomer, 0=>peer), names table (ParseNames). Tests 93.2% coverage, vet clean.
 
+- STEP 4 — internal/valleyfree: ClassifyPath(path,hasASSet,rl)->Verdict{IsLeak,OffenderAS,Reason,Hops(wire order),HadUnknown,KnownHops}. Two-phase Up→Down machine; walks propagation order (decreasing wire idx); offender = leaking AS (To-side of offending wire hop); siblings transparent; unknown+AS_SET never flagged; prepend dedup. 13-case table test (uphill/downhill/peer/leak×3/sibling/unknown/AS_SET) at 97.7% coverage.
+
 ## In progress
-STEP 4 (internal/valleyfree) — Gao-Rexford two-phase ClassifyPath(path []uint32, rel) returning (VFStatus, []PathHop, offenderAS, reason, hadUnknown, hadASSet). >=12-case table test.
+STEP 5 (internal/rpki) — VRP, v4/v6 trie, Validate (covering=containment ONLY; maxLength-exceeded+no-match=>Invalid not NotFound), AS0 disavow, JSON loader. Tests incl. maxLength→Invalid.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-4. internal/valleyfree Gao-Rexford classifier + table test.
+5. internal/rpki RFC 6811 validation + JSON loader + tests.
 4. internal/valleyfree Gao-Rexford two-phase ClassifyPath + >=12-case table test.
 5. internal/rpki VRP trie + RFC 6811 Validate (corrected maxLength) + JSON loader + tests.
 6. internal/classify precedence glue + tests.
