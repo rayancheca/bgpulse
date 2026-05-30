@@ -1,0 +1,58 @@
+.topology {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.topology__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  touch-action: none;
+}
+
+.topology__canvas:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.node-tooltip {
+  position: absolute;
+  transform: translate(14px, -50%);
+  pointer-events: none;
+  min-width: 150px;
+  padding: var(--space-2) var(--space-3);
+  background: color-mix(in oklab, var(--color-surface-elevated) 94%, transparent);
+  backdrop-filter: var(--blur-panel);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  z-index: 20;
+}
+
+.node-tooltip__asn {
+  font-size: var(--text-title);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.node-tooltip__name {
+  font-size: var(--text-meta);
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+  margin-bottom: var(--space-2);
+}
+
+.node-tooltip__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: 2px;
+}
+
+.node-tooltip__stamp {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-weight: 600;
+}
