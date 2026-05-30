@@ -1,0 +1,21 @@
+# BGPulse full stack. After `docker compose up --build`, open http://localhost:8080.
+# nginx serves the SPA and proxies /api and /ws to the Go backend.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["-mode", "demo", "-listen", ":8080", "-log-format", "json"]
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
