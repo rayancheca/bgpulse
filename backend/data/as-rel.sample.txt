@@ -1,0 +1,8 @@
+# Demo AS-relationship subset (CAIDA serial-2 format) covering the bundled
+# replay fixture (data/updates.sample.mrt). Format: AS1|AS2|REL
+#   REL = -1: AS1 is the provider of AS2
+#   REL =  0: AS1 and AS2 are settlement-free peers
+174|3356|0
+3356|65001|-1
+3356|65002|-1
+6939|65003|-1

@@ -35,12 +35,24 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 - STEP 11 — internal/api: dto.go (full pinned wire contract incl WSMessage type snapshot/event/stats), mapper.go (topology views + ClassifiedEvent → DTO; enum .String() lowercase tokens, RFC3339, {asn,value}), envelope.go (Envelope[T]/writeOK/writeErr), server.go (Store iface — *topology.Aggregator satisfies it; HealthInfo; Routes(wsHandler) with recoverer/logger/cors), rest.go (handlers + parseASN/parseLimit). Tests: httptest status codes + byte-exact golden ClassifiedDTO JSON. api imports topology+bgp (no cycle).
 - STEP 12 — internal/wshub: coder/websocket v1.8.14. hub.go (single-goroutine Run owns clients; sendToClient drop-oldest + disconnect>512 drops; Broadcast non-blocking; Handler upgrades, writes snapshot directly pre-pump, registers; h.done prevents unregister leak on shutdown). client.go (writePump drains send→conn, readPump detects close→unregister). Tests: drop-oldest+disconnect unit + real WS dial snapshot+broadcast, -race green.
 
-## In progress
-STEP 13 (config+pipeline+server+main) — internal/config (Config, Load flags+env+validate, NewLogger, limits.go). internal/pipeline (Source→Classifier 1 goroutine→aggregator.in chan, owns/closes it). api/frames.go (exported EventFrame/StatsFrame/SnapshotFrame helpers). internal/server (composition root New+Run errgroup graceful shutdown; sources.go mode demo|replay + degrade). data/embed.go + bundled as-rel.sample.txt + demo_vrps.json. cmd/bgpulse/main.go. THEN run demo, curl health/topology, confirm WS streams.
+- STEP 13 — config+pipeline+server+main: internal/config (Load flags+env+validate, NewLogger, limits; config_test: defaults/flags/env precedence/5 validation errors). internal/pipeline (Source→1 classifier goroutine→aggregator.in, owns+closes chan). api/frames.go (EventFrame/StatsFrame/SnapshotFrame). internal/server (buildSources mode demo|replay+bundled-fallback+optional RTR; New wires all; Run errgroup + graceful HTTP shutdown, swallows context.Canceled on clean SIGTERM; staticFallback for single-binary frontend). data/embed.go + bundled as-rel.sample.txt + demo_vrps.json. cmd/bgpulse/main.go. VERIFIED LIVE: demo → 4s: 65 events/5 leaks/3 hijacks/73 nodes/109 edges/~14ev/s/40 topOrigins; health/stats/topology/asn all correct; clean SIGTERM exit 0. -race green.
 
-## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl, confirm WS.
-14-20. Frontend (design system, lib, hooks, canvas, panels, app shell + Playwright) + docker/readme/screenshots.
+## ✅✅ BACKEND COMPLETE (steps 1-13). Runs end-to-end. Core coverage: relationships 93% valleyfree 98% rpki 96% classify 100% synth 86% topology 89%. Build: `go -C backend build ./...`; run: `./backend/bin/bgpulse -mode demo` (REST+WS on :8080).
+
+## In progress
+STEP 14 (frontend design system) — tokens.css (routing-observatory violet palette + type scale), typography.css (@fontsource Space Grotesk + IBM Plex Mono), global.css (reset, focus-visible, scrollbar), vitest config. Verify npm build.
+
+## Next steps (CLAUDE.md §3f)
+14. Frontend design system + tokens. Verify npm build.
+15. lib/: types.ts (mirror DTOs exactly), schema.ts (zod), constants/format/status/scales/forceGraph/graphStore + vitest.
+16. hooks/: useWebSocket (zod+backoff), useTopologyStore, useStreamStore, useReducedMotion, useResizeObserver.
+17. components/topology: TopologyCanvas + canvasRenderer + hitTest + overlay (Canvas2D + d3-force).
+18. components/: event-stream rail, status-bar, rpki-sidebar, drill-down drawer.
+19. app shell + providers; run full stack; Playwright golden path; fix until clean.
+20. Dockerfiles + docker-compose + nginx; README + >=6 live screenshots; release v1.0.0.
+
+## WIRE CONTRACT for frontend (pinned, from api/dto.go + golden in api/rest_test.go):
+WS frame: {type:"snapshot"|"event"|"stats", seq, event?|stats?|snapshot?}. event payload=ClassifiedDTO{id,seq,timestamp(RFC3339 string),kind:"announce"|"withdraw",prefix(CIDR),peerAs,asPath[uint32](left=collector..right=origin),nextHop,communities[{asn,value}],originAs,vfStatus:"valid"|"leak"|"hijack"|"unknown",rpkiStatus:"valid"|"invalid"|"notfound",hops[{from,to,rel,isOffender}],offenderAs(0=none),reason}. stats=StatsDTO{totalEvents,announces,withdraws,leaks,hijacks,rpkiValid,rpkiInvalid,rpkiNotFound,nodeCount,edgeCount,eventsPerSec,topOrigins[{asn,name,prefixCount,rpkiStatus,valid,invalid,notfound,throughput[int]}]}. snapshot={topology{nodes[{asn,name,prefixCount,rpki{valid,invalid,notfound},firstSeen,lastSeen}],edges[{from,to,status,rel,count,leakCount,hijackCount,lastEvent,lastEventId}],nodeCount,edgeCount,generated},events[ClassifiedDTO],stats}. REST envelope {ok,data?,error?}. Dev: backend :8080 (set -cors-origin http://localhost:5173), vite :5173, VITE_WS_URL=ws://localhost:8080/ws. UI label: capitalize rpki wire token → Valid/Invalid/NotFound.
 12. internal/wshub Hub + Client drop-oldest + slow-client test.
 13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl, confirm WS.
 14-20. Frontend + docker/readme/screenshots.
