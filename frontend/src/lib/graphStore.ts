@@ -174,8 +174,9 @@ export function applyTopology(g: GraphState, topo: Topology, clock: number): boo
 }
 
 // applyStats refreshes prefix counts, RPKI status, and names for the most-active
-// origin ASes from a periodic stats frame.
-export function applyStats(g: GraphState, stats: Stats, clock: number): void {
+// origin ASes from a periodic stats frame. It returns whether a new node was added.
+export function applyStats(g: GraphState, stats: Stats, clock: number): boolean {
+  let changed = false
   for (const o of stats.topOrigins) {
     if (o.prefixCount > g.maxPrefixCount) g.maxPrefixCount = o.prefixCount
   }
@@ -192,6 +193,7 @@ export function applyStats(g: GraphState, stats: Stats, clock: number): void {
         radius: radiusFor(o.prefixCount, g.maxPrefixCount),
         bornAt: clock,
       })
+      changed = true
     } else {
       if (o.name) existing.name = o.name
       existing.prefixCount = o.prefixCount
@@ -199,4 +201,5 @@ export function applyStats(g: GraphState, stats: Stats, clock: number): void {
       existing.radius = radiusFor(o.prefixCount, g.maxPrefixCount)
     }
   }
+  return changed
 }
