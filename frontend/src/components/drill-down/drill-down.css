@@ -1,0 +1,129 @@
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--drawer-w);
+  max-width: 100vw;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in oklab, var(--color-surface) 96%, transparent);
+  backdrop-filter: var(--blur-panel);
+  border-left: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-drawer);
+  animation: drawer-in calc(280ms * var(--motion-scale, 1)) var(--ease-out-expo);
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.drawer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.drawer__pair {
+  font-size: var(--text-display);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-top: 2px;
+}
+
+.drawer__arrow {
+  color: var(--color-accent);
+}
+
+.drawer__close {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+.drawer__close:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-elevated);
+}
+
+.drawer__verdict {
+  margin: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid;
+  border-left-width: 3px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+}
+
+.drawer__verdict-status {
+  display: block;
+  font-size: var(--text-title);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.drawer__verdict-meta {
+  margin-top: 2px;
+}
+
+.drawer__events {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.drawer__events-head {
+  position: sticky;
+  top: 0;
+  padding: var(--space-2) 0;
+  background: var(--color-surface);
+}
+
+.drawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.drawer__event {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.drawer__event-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: 2px;
+}
+
+.drawer__event-prefix {
+  flex: 1;
+  color: var(--color-text-primary);
+}
+
+.drawer__reason {
+  margin-top: var(--space-1);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.drawer__empty {
+  padding: var(--space-4) 0;
+  text-align: center;
+}

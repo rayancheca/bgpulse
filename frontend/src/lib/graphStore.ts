@@ -84,6 +84,8 @@ export function applyEvent(g: GraphState, ev: ClassifiedEvent, clock: number): b
         rel: relForHop(ev, from, to),
         status: ev.vfStatus,
         count: 0,
+        leakCount: 0,
+        hijackCount: 0,
         lastSeq: ev.seq,
         bornAt: clock,
         touchedAt: clock,
@@ -93,6 +95,8 @@ export function applyEvent(g: GraphState, ev: ClassifiedEvent, clock: number): b
       structureChanged = true
     }
     link.count++
+    if (ev.vfStatus === 'leak') link.leakCount++
+    else if (ev.vfStatus === 'hijack') link.hijackCount++
     link.status = ev.vfStatus
     link.lastSeq = ev.seq
     link.touchedAt = clock
@@ -158,6 +162,8 @@ export function applyTopology(g: GraphState, topo: Topology, clock: number): boo
         rel: dto.rel,
         status: dto.status,
         count: dto.count,
+        leakCount: dto.leakCount,
+        hijackCount: dto.hijackCount,
         lastSeq: 0,
         bornAt: clock,
         touchedAt: 0,
@@ -168,6 +174,8 @@ export function applyTopology(g: GraphState, topo: Topology, clock: number): boo
       existing.status = dto.status
       existing.rel = dto.rel
       existing.count = dto.count
+      existing.leakCount = dto.leakCount
+      existing.hijackCount = dto.hijackCount
     }
   }
   return changed

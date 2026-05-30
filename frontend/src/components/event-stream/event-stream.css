@@ -1,0 +1,114 @@
+.event-rail {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  width: var(--rail-w);
+  max-width: calc(100vw - 2 * var(--space-4));
+  max-height: 42%;
+  display: flex;
+  flex-direction: column;
+  z-index: 25;
+  overflow: hidden;
+}
+
+.event-rail__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.event-rail__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1) 0;
+  overflow-y: auto;
+}
+
+.event-row {
+  display: grid;
+  grid-template-columns: auto 16px minmax(110px, auto) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 3px var(--space-4);
+  border-left: 2px solid transparent;
+  animation: row-in calc(220ms * var(--motion-scale, 1)) var(--ease-out-expo);
+}
+
+.event-row--anomaly {
+  border-left-color: var(--row-accent);
+  background: color-mix(in oklab, var(--row-accent) 8%, transparent);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.event-row__time {
+  font-family: var(--font-mono);
+}
+
+.event-row__kind {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--text-meta);
+  text-align: center;
+  border-radius: var(--radius-sm);
+}
+.event-row__kind--announce {
+  color: var(--color-accent-bright);
+}
+.event-row__kind--withdraw {
+  color: var(--color-route-withdraw);
+}
+
+.event-row__prefix {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.aspath {
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aspath__hop--offender {
+  color: var(--color-bg);
+  background: var(--color-route-leak);
+  border-radius: var(--radius-sm);
+  padding: 0 3px;
+  font-weight: 600;
+}
+.event-row--anomaly .aspath__hop--offender {
+  background: var(--row-accent);
+}
+
+.event-row__tags {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: end;
+}
+.event-row__tag {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.event-row__rpki {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+}
+.event-row__withdraw {
+  font-style: italic;
+}

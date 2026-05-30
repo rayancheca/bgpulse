@@ -51,6 +51,8 @@ export interface SimLink {
   rel: Relationship
   status: VfStatus
   count: number // cumulative traversals (drives edge width)
+  leakCount: number
+  hijackCount: number
   lastSeq: number
   bornAt: number
   touchedAt: number // sim-clock ms of the most recent traversing event (for flash)

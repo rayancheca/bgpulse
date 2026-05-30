@@ -1,0 +1,88 @@
+.rpki-sidebar {
+  position: absolute;
+  top: calc(var(--status-bar-h) + var(--space-5));
+  right: var(--space-4);
+  width: var(--sidebar-w);
+  max-height: calc(100vh - var(--status-bar-h) - 3 * var(--space-5));
+  display: flex;
+  flex-direction: column;
+  z-index: 25;
+  overflow: hidden;
+}
+
+.rpki-sidebar__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rpki-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rpki-card {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+}
+
+.rpki-card--invalid {
+  border-color: color-mix(in oklab, var(--color-rpki-invalid) 55%, var(--color-border));
+  background: color-mix(in oklab, var(--color-rpki-invalid) 10%, var(--color-surface-elevated));
+}
+
+.rpki-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rpki-card__asn {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.rpki-card__stamp {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-weight: 700;
+}
+
+.rpki-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 1px 0 var(--space-1);
+}
+
+.rpki-card__name {
+  font-size: var(--text-meta);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sparkline {
+  display: block;
+  width: 100%;
+  height: 22px;
+}
+
+.rpki-card__counts {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--text-meta);
+  margin-top: 2px;
+}
