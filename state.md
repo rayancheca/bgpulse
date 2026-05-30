@@ -12,11 +12,12 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 - Visual direction derived + recorded in project_history.md: routing-observatory-violet-constellation.
 - STEP 1 — Scaffold: backend go.mod (module github.com/rayancheca/bgpulse/backend, go 1.26.2), backend/Makefile, frontend Vite+React19+TS (strict mode added: strict/noImplicitOverride/noUncheckedIndexedAccess), deps installed (d3, zustand, zod, @fontsource/space-grotesk, @fontsource/ibm-plex-mono, vitest+jsdom+testing-library), README skeleton, LICENSE, .gitignore. Verified: frontend `npm run build` OK (60kB gz), backend `go build ./...` OK.
 
+- STEP 2 — internal/bgp: types.go (UpdateEvent, ClassifiedEvent, Community, PathHop), enums UpdateKind/RelStatus/VFStatus/RPKIStatus with String()/Invert()/Severity(), source.go (Source iface), classifier.go (Classifier iface). Tests green, go vet clean. RelStatus semantics: Lookup(a,b) = a's view of b; RelCustomer=b is a's customer (downhill), RelProvider=b is a's provider (uphill).
+
 ## In progress
-STEP 2 (internal/bgp domain types) — about to create UpdateEvent, ClassifiedEvent, Community, PathHop, enums (UpdateKind/RelStatus/VFStatus/RPKIStatus) + String() + tests.
+STEP 3 (internal/relationships) — RelStore (immutable, Lookup with inversion + sibling/self), CAIDA serial-2 loader, names table, tests.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-2. internal/bgp domain types + enums + String() + tests.
 3. internal/relationships RelStore + CAIDA loader + tests.
 4. internal/valleyfree Gao-Rexford two-phase ClassifyPath + >=12-case table test.
 5. internal/rpki VRP trie + RFC 6811 Validate (corrected maxLength) + JSON loader + tests.
