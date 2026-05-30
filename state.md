@@ -26,11 +26,12 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 ## BACKEND CORE COMPLETE (steps 1-7). Pure algorithmic layer done + tested. Coverage: relationships 93%, valleyfree 98%, rpki 96%, classify 100%, synth 86%.
 
+- STEP 8 — internal/mrt: gobgp v4.5.0 added (only 3rd-party dep). parser.go (recordToEvents: BGP4MP MESSAGE/AS4 → []UpdateEvent; AS_PATH flatten, AS_SET→single opaque hop+HasASSet, origin=last SEQ elem/0 if trailing SET, communities, v4 NLRI/withdraw + v6 MP_REACH/MP_UNREACH). reader.go (DecodeStream via SplitMrt; OpenFile gzip/bz2). replay.go (ReplaySource bgp.Source, paced, optional loop, assigns mrt-NNN ids). sample.go (BuildSampleMRT real BGP4MP bytes). cmd/gen-mrt writes data/updates.sample.mrt (334B, committed; .gitignore exception added). Golden test: 4 records decode correctly (announce/AS_SET-origin0/v6/withdraw). Full suite -race green.
+
 ## In progress
-STEP 8 (internal/mrt) — MRT/BGP parser via gobgp v4: parser.go (normalize MRTMessage->[]UpdateEvent: AS_PATH flatten + AS_SET→single opaque hop + HasASSet + 4-byte ASNs; origin = last AS_SEQUENCE elem, 0 if AS_SET; bounds-check PEER_INDEX), reader.go (gzip/bz2 + SplitMrt scanner), replay.go (paced bgp.Source). Golden decode test against a bundled MRT file (encode real BGP4MP wire bytes with gobgp, decode+normalize, assert).
+STEP 9 (internal/rtr) — RFC 8210 RTR client: pdu.go (PDU type consts + wire structs), codec.go (big-endian encode/decode, round-trip), client.go (session state machine: connect→ResetQuery→CacheResponse→Prefix PDUs→EndOfData; SerialNotify→SerialQuery deltas; swaps VRPStore via atomic.Pointer). net.Pipe fake-server test.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-8. internal/mrt parser + replay source + golden test.
 9. internal/rtr RFC 8210 PDU codec + client state machine + net.Pipe fake-server test.
 10. internal/topology graph + EventRing + series + Aggregator actor + apply + snapshot (-race).
 11. internal/api DTOs + mapper + envelope + REST + golden JSON contract test.

@@ -34,6 +34,8 @@ yarn-error.log*
 *.bz2
 *.gz
 !backend/internal/**/testdata/**
+# bundled demo fixtures are committed (embedded into the binary)
+!backend/data/updates.sample.mrt
 
 # ---- Build / tmp ----
 /dist/
