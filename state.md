@@ -28,12 +28,17 @@ bgpulse — Live BGP route-leak and prefix-hijack detector with AS-path topology
 
 - STEP 8 — internal/mrt: gobgp v4.5.0 added (only 3rd-party dep). parser.go (recordToEvents: BGP4MP MESSAGE/AS4 → []UpdateEvent; AS_PATH flatten, AS_SET→single opaque hop+HasASSet, origin=last SEQ elem/0 if trailing SET, communities, v4 NLRI/withdraw + v6 MP_REACH/MP_UNREACH). reader.go (DecodeStream via SplitMrt; OpenFile gzip/bz2). replay.go (ReplaySource bgp.Source, paced, optional loop, assigns mrt-NNN ids). sample.go (BuildSampleMRT real BGP4MP bytes). cmd/gen-mrt writes data/updates.sample.mrt (334B, committed; .gitignore exception added). Golden test: 4 records decode correctly (announce/AS_SET-origin0/v6/withdraw). Full suite -race green.
 
+- STEP 9 — internal/rtr: RFC 8210 v1 client. pdu.go (PDU type consts, error codes, decoded structs). codec.go (readPDU decode; EncodePrefix/EndOfData/SerialNotify/CacheResponse/CacheReset + writeResetQuery/writeSerialQuery). client.go (Client.Run: dial→ResetQuery full sync→CacheResponse/Prefix/EndOfData→commit; SerialNotify or refresh-deadline→SerialQuery delta; CacheReset→resync; ErrorReport fatal/transient; reconnect w/ backoff; context.AfterFunc closes conn on cancel; commits via rpki.Live atomic swap). Also added rpki/live.go (atomic-swappable Validator). Tests: codec round-trips + net.Pipe full-sync+delta integration, -race green.
+
 ## In progress
-STEP 9 (internal/rtr) — RFC 8210 RTR client: pdu.go (PDU type consts + wire structs), codec.go (big-endian encode/decode, round-trip), client.go (session state machine: connect→ResetQuery→CacheResponse→Prefix PDUs→EndOfData; SerialNotify→SerialQuery deltas; swaps VRPStore via atomic.Pointer). net.Pipe fake-server test.
+STEP 10 (internal/topology) — single-writer Aggregator actor owning TopologyGraph (Nodes/Edges directed/rib), EventRing (bounded), series (per-ASN RPKI sparkline buckets), Stats+EWMA; apply() mutation (prefix-count in/out on announce/withdraw, origin-change, edge worst-status, self-loop skip, negative guard); snapshot via snapReq channel. -race tests.
 
 ## Next steps (implementation plan in CLAUDE.md §3f, strict order)
-9. internal/rtr RFC 8210 PDU codec + client state machine + net.Pipe fake-server test.
 10. internal/topology graph + EventRing + series + Aggregator actor + apply + snapshot (-race).
+11. internal/api DTOs + mapper + envelope + REST + golden JSON contract test.
+12. internal/wshub Hub + Client drop-oldest + slow-client test.
+13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl, confirm WS.
+14-20. Frontend + docker/readme/screenshots.
 11. internal/api DTOs + mapper + envelope + REST + golden JSON contract test.
 12. internal/wshub Hub + Client drop-oldest + slow-client test.
 13. internal/config + pipeline + server + cmd/bgpulse/main.go; run demo, curl health/topology, confirm WS.
