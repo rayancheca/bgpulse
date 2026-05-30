@@ -1,0 +1,40 @@
+# ---- Go ----
+/backend/bin/
+/backend/bgpulse
+*.test
+*.out
+coverage.out
+coverage.html
+
+# ---- Node / frontend ----
+node_modules/
+/frontend/dist/
+/frontend/.vite/
+*.local
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Env / secrets ----
+.env
+.env.*
+!.env.example
+
+# ---- Editor / OS ----
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# ---- Data dumps (large MRT / VRP downloads kept out of git) ----
+/data/dumps/
+*.mrt
+*.bz2
+*.gz
+!backend/internal/**/testdata/**
+
+# ---- Build / tmp ----
+/dist/
+/tmp/
