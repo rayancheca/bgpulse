@@ -1,0 +1,38 @@
+/* Typographic roles. UI text is Space Grotesk; all hard data (ASNs, prefixes, IPs,
+   AS_PATHs, timestamps) is set in IBM Plex Mono with tabular figures. */
+
+.label {
+  font-size: var(--text-status);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.meta {
+  font-size: var(--text-meta);
+  color: var(--color-text-tertiary);
+}
+
+.data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: var(--text-data);
+  line-height: var(--leading-data);
+}
+
+.panel-title {
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.counter {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-counter);
+  font-weight: 600;
+  line-height: 1;
+}

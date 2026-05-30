@@ -1,0 +1,96 @@
+/*
+ * BGPulse design tokens — "Routing Observatory".
+ * A near-black, faintly violet-tinted backbone canvas on which the AS topology
+ * glows in violet. Violet is both the brand accent and the route-normal status, so
+ * a healthy graph glows in its own colour and anomalies (amber leak, crimson hijack)
+ * read as intrusions. Emerald is reserved exclusively for an RPKI-Valid origin.
+ */
+:root {
+  /* ---- Backbone canvas / surfaces (near-black, faint violet tint) ---- */
+  --color-bg: #08070d;
+  --color-surface: #100e18;
+  --color-surface-elevated: #181527;
+  --color-border: #272234;
+  --color-border-strong: #3a3350;
+
+  /* ---- Text ---- */
+  --color-text-primary: #ece8f5;
+  --color-text-secondary: #9b93b0;
+  --color-text-tertiary: #645c78;
+
+  /* ---- Accent (violet/indigo system) ---- */
+  --color-accent: #8b5cf6;
+  --color-accent-bright: #a78bfa;
+  --color-accent-dim: #5b3fa0;
+  --color-accent-glow: #c4b5fd;
+
+  /* ---- Route valley-free status ---- */
+  --color-route-normal: #7c6cf0; /* violet — valley-free OK (signature) */
+  --color-route-leak: #f2a23c; /* amber — valley-free violation (leak) */
+  --color-route-hijack: #f2415a; /* crimson — prefix hijack / RPKI Invalid origin */
+  --color-route-withdraw: #645c78; /* gray — withdrawal (edge removal) */
+  --color-route-unknown: #4a4458; /* dim — topology unknown */
+
+  /* ---- RPKI origin-validation status ---- */
+  --color-rpki-valid: #34d399; /* emerald — the only green; cryptographically verified */
+  --color-rpki-invalid: #f2415a; /* crimson — Invalid origin IS the hijack signal */
+  --color-rpki-notfound: #8a8198; /* slate — no covering ROA; neutral */
+
+  /* ---- Data-viz fills ---- */
+  --color-spark-stroke: #8b5cf6;
+  --color-spark-area: rgba(139, 92, 246, 0.12);
+
+  /* ---- Typography ---- */
+  --font-ui: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  --text-status: 0.6875rem; /* 11px — status-bar micro-labels */
+  --text-meta: 0.75rem; /* 12px — timestamps, secondary meta */
+  --text-data: 0.8125rem; /* 13px — AS_PATH, prefixes (mono) */
+  --text-body: 0.875rem; /* 14px — panel body */
+  --text-title: 1rem; /* 16px — panel titles */
+  --text-counter: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --text-display: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+
+  --tracking-label: 0.08em;
+  --leading-data: 1.45;
+
+  /* ---- Spacing (intentional rhythm, not uniform) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  /* ---- Radii (varied with purpose) ---- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* ---- Depth ---- */
+  --shadow-panel: 0 8px 30px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(196, 181, 253, 0.04) inset;
+  --shadow-drawer: -16px 0 48px rgba(0, 0, 0, 0.6);
+  --blur-panel: blur(10px) saturate(1.1);
+
+  /* ---- Motion (gated by --motion-scale for reduced-motion) ---- */
+  --motion-scale: 1;
+  --duration-fast: 150ms;
+  --duration-normal: 280ms;
+  --duration-slow: 600ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---- Layout ---- */
+  --status-bar-h: 48px;
+  --sidebar-w: 320px;
+  --rail-w: 430px;
+  --drawer-w: 480px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-scale: 0;
+  }
+}
